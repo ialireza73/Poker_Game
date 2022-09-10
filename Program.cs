@@ -22,19 +22,100 @@ namespace Poker_Game
                 "C_A","C_K","C_Q","C_J","C_10","C_9","C_8","C_7","C_6"//Clubs
 
             };
-            Random random = new Random();
+            Random randomINT = new Random();
 
             int[] indexerNUM = new int[36];
             string[] randomcards = new string[36];
 
-            for (int i = 0; i < indexerNUM.Length; i++)
+            indexerNUM = Shuffle(randomINT, all_Cards);
+
+            randomcards = FillTheCardsFromIndex(indexerNUM, Keeped_Cards);
+
+            int[] Choosedcards = new int[5];
+            Choosedcards = ChooseYourCards();
+            string[] player_cards = FillingTheHand(Choosedcards, randomcards);
+
+            Show_hand(player_cards);
+            System.Console.WriteLine("do you want to keep them? y/n");
+            bool keepthem = true;
+            if (Console.ReadLine() != "y")
+            {
+                keepthem = false;
+            }
+
+            if (!keepthem)
+            {
+                player_cards = AgainFilltheHand(player_cards, randomcards, Choosedcards);
+                Show_hand(player_cards);
+
+            }
+
+        }
+        public static string[] AgainFilltheHand(string[] inputHand, string[] randomdata, int[] blanket)//we let player remove and fill unwanted cards
+        {
+            System.Console.WriteLine("how many card do you want to put out: ");
+            int delete_Card_count = Convert.ToInt32(Console.ReadLine());
+            System.Console.WriteLine($"choose {delete_Card_count} card be out by its number:");
+            for (int i = 0; i < delete_Card_count; i++)
+            {
+                inputHand[Convert.ToInt32(Console.ReadLine()) - 1] = null;
+            }
+            Show_hand(inputHand);
+            System.Console.WriteLine($"ok! choose new {delete_Card_count} Cards,except {blanket[0] + 1} & {blanket[1] + 1} & {blanket[2] + 1} & {blanket[3] + 1} & {blanket[4] + 1} ");
+            for (int i = 0; i < inputHand.Length; i++)
+            {
+                int index;
+                if (inputHand[i] == null)
+                {
+                    index = Convert.ToInt32(Console.ReadLine());
+                    inputHand[i] = randomdata[index - 1];
+                    randomdata[index] = null;
+                }
+            }
+
+            return inputHand;
+        }
+        public static string[] FillingTheHand(int[] choosed_Index, string[] randomData)//use those 5 number we get from ChoosingYourHand()
+        {
+            string[] player_cards = new string[5];
+            for (int i = 0; i < player_cards.Length; i++)
+            {
+                player_cards[i] = randomData[choosed_Index[i]];
+                randomData[choosed_Index[i]] = null;
+            }
+            return player_cards;
+        }
+        public static int[] ChooseYourCards()//choose 5 number to fill player hand
+        {
+            System.Console.WriteLine("choose 5 number between 1 and 36");
+            int[] Choosedcards = new int[5];
+            for (int i = 0; i < Choosedcards.Length; i++)
+            {
+                Choosedcards[i] = Convert.ToInt32(Console.ReadLine()) - 1;
+            }
+            return Choosedcards;
+
+        }
+        public static string[] FillTheCardsFromIndex(int[] indexer, string[] data)//fill the empty string by using indexes from Suffle() and the pattern cards 
+        {
+            string[] emptyHand = new string[36];
+            for (int i = 0; i < emptyHand.Length; i++)
+            {
+                emptyHand[i] = data[indexer[i]];
+            }
+            return emptyHand;
+        }
+        public static int[] Shuffle(Random random, string[] all_Cards)//creating of indexes for shuffling
+        {
+            int[] index_creator = new int[36];
+            for (int i = 0; i < index_creator.Length; i++)
             {
 
                 int randomCardNumber = random.Next(0, all_Cards.Length);
 
                 if (all_Cards[randomCardNumber] != null)
                 {
-                    indexerNUM[i] = randomCardNumber;
+                    index_creator[i] = randomCardNumber;
                     all_Cards[randomCardNumber] = null;
                 }
                 else
@@ -43,7 +124,7 @@ namespace Poker_Game
                     {
                         if (all_Cards[k] != null)
                         {
-                            indexerNUM[i] = k;
+                            index_creator[i] = k;
                             all_Cards[k] = null;
                             break;
                         }
@@ -52,88 +133,23 @@ namespace Poker_Game
                 }
 
             }
-            for (int i = 0; i < randomcards.Length; i++)
-            {
-                randomcards[i] = Keeped_Cards[indexerNUM[i]];
-            }
-            System.Console.WriteLine("choose 5 number between 0 and 35");
-            int _1th = Convert.ToInt32(Console.ReadLine());
-            int _2th = Convert.ToInt32(Console.ReadLine());
-            int _3th = Convert.ToInt32(Console.ReadLine());
-            int _4th = Convert.ToInt32(Console.ReadLine());
-            int _5th = Convert.ToInt32(Console.ReadLine());
-
-
-            string[] player_cards ={
-                           randomcards[_1th],
-                           randomcards[_2th],
-                           randomcards[_3th],
-                           randomcards[_4th],
-                           randomcards[_5th]
-                          };
-            randomcards[_1th] = null;
-            randomcards[_2th] = null;
-            randomcards[_3th] = null;
-            randomcards[_4th] = null;
-            randomcards[_5th] = null;
-
-            foreach (var item in player_cards)
-            {
-                System.Console.WriteLine(item);
-
-            }
-            System.Console.WriteLine("do you want to keep them? y/n");
-            bool keepthem = true;
-            if (Console.ReadLine() != "y")
-            {
-                keepthem = false;
-            }
-            else { keepthem = true; }
-
-            if (!keepthem)
-            {
-                System.Console.WriteLine("how much card do you want to put out: ");
-                int delete_Card_count = Convert.ToInt32(Console.ReadLine());
-                System.Console.WriteLine($"choose {delete_Card_count} card be out:");
-                for (int i = 1; i <= delete_Card_count; i++)
-                {
-                    player_cards[Convert.ToInt32(Console.ReadLine())] = null;
-                }
-
-                System.Console.WriteLine($"ok! choose new{delete_Card_count} Cards,except {_1th} & {_2th} & {_3th} & {_4th} & {_5th} ");
-                for (int i = 0; i < player_cards.Length; i++)
-                {
-                    if (player_cards[i] == null)
-                    {
-                        player_cards[i] = randomcards[Convert.ToInt32(Console.ReadLine())];
-                    }
-
-                }
-                foreach (var item in player_cards)
-                {
-                    System.Console.WriteLine(item);
-
-                }
-
-            }
-
-
-            // foreach (var item in player_cards)
-            // {
-            //     System.Console.WriteLine(item);
-
-            // }
-
-            // int p = 0;
-            // foreach (var item in randomcards)
-            // {
-            //     p++;
-            //     System.Console.WriteLine(p + " :" + item);
-            // }
-
-
+            return index_creator;
         }
-        static void wrong_Poker()
+        static void Show_hand(string[] hand)//writeLine the player hand
+        {
+            int i = 1;
+            foreach (var item in hand)
+            {
+                if (item != null)
+                {
+                    System.Console.WriteLine(i + ": " + item);
+
+                }
+                else { System.Console.WriteLine(i + ": " + "you choosed this one NULL"); }
+                i++;
+            }
+        }
+        static void wrong_Poker()//i used a neasted array and it was wrong but i keep it for its complicated Shuffle method
         {
             string[,] all_Cards = new string[4, 9]
            {
@@ -155,8 +171,6 @@ namespace Poker_Game
             int[] indexerMark = new int[36];
             int[] indexerNUM = new int[36];
             string[] randomcards = new string[36];
-
-            //  System.Console.WriteLine(all_Cards[0, 0]);
             for (int i = 0; i < indexerNUM.Length; i++)
             {
 
@@ -167,21 +181,12 @@ namespace Poker_Game
                 {
                     indexerMark[i] = randomcardMARK;
                     indexerNUM[i] = randomCardNumber;
-                    //  System.Console.WriteLine();
                     all_Cards[randomcardMARK, randomCardNumber] = null;
-                    //   System.Console.WriteLine(i + "ADDED: " + "_ " + "mark:" + indexerMark[i] + "....." + "Num:" + indexerNUM[i]);
+
                 }
                 else
                 {
-                    // foreach (var item in all_Cards)
-                    // {
-                    //     int
-                    //     if(item!=null)
-                    //     {
-                    //         indexerMark[i]=item;
-                    //     }
-                    // }
-                    //  System.Console.WriteLine("**we tried: " + randomcardMARK + " " + randomCardNumber);
+
                     for (int k = 0; k < all_Cards.GetLength(0); k++)
                     {
                         bool getout = false;
@@ -203,11 +208,7 @@ namespace Poker_Game
                             break;
                         }
                     }
-                    //  System.Console.WriteLine(i + "null: " + "_ " + "mark:" + indexerMark[i] + "....." + "Num:" + indexerNUM[i]);
                 }
-
-
-
 
             }
             for (int i = 0; i < randomcards.Length; i++)
@@ -220,12 +221,6 @@ namespace Poker_Game
                 p++;
                 System.Console.WriteLine(p + " :" + item);
             }
-            // //int[, ,] arr3d3 = new int[2, 2, 3]{ { { 1, 2, 3}, {4, 5, 6} },{ { 7, 8, 9}, {10, 11, 12} }};
-            // foreach (var item in all_Cards)
-            // {
-            //     System.Console.WriteLine(item);
-
-            // }
 
         }
 
